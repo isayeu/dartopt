@@ -1,7 +1,5 @@
 import '../db/database_helper.dart';
-import '../logic/mtow_an26_f15.dart';
-import '../logic/mtow_an26_f5.dart';
-import '../logic/mtow_an24_f15.dart';
+import 'mtow_lookup.dart';
 import 'package:dartopt/logic/calculate_pr_alt.dart';
 import 'package:dartopt/logic/wind_calc.dart';
 
@@ -29,16 +27,65 @@ Future<String> calculateMtow({
   int? mtow;
   if (aircraft == 'Ан-26') {
     if (flaps == '15') {
-      mtow = await getMtowAn26F15(prAlt: prAlt, temperature: tempInt);
+      mtow = await getMtow(
+        table: 'F15OPT',
+        tempSteps: [
+          -50,
+          -40,
+          -30,
+          -20,
+          -15,
+          -10,
+          -5,
+          0,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30,
+          35,
+          40,
+          45
+        ],
+        prAlt: prAlt,
+        temperature: tempInt,
+      );
     } else if (flaps == '5') {
-      mtow = await getMtowAn26F5(prAlt: prAlt, temperature: tempInt);
+      mtow = await getMtow(
+        table: 'F5OPT',
+        tempSteps: [
+          -30,
+          -25,
+          -20,
+          -15,
+          -10,
+          -5,
+          0,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30,
+          35,
+          40,
+          45
+        ],
+        prAlt: prAlt,
+        temperature: tempInt,
+      );
+    }
+  } else if (aircraft == 'Ан-24') {
+    if (flaps == '15') {
+      mtow = await getMtow(
+        table: 'AN24RV_F15_ATM',
+        tempSteps: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45],
+        prAlt: prAlt,
+        temperature: tempInt,
+      );
     }
   }
-  else if (aircraft == 'Ан-24') {
-  if (flaps == '15') {
-    mtow = await getMtowAn24F15(prAlt: prAlt, temperature: tempInt);
-  }
-}
 
   final headwind = calculateHeadwindComponent(
     windDirection: int.tryParse(windDir) ?? 0,
